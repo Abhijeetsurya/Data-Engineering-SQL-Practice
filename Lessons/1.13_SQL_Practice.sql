@@ -210,4 +210,122 @@ SELECT * FROM job_postings_fact
 WHERE job_no_degree_mention =true;
 
 
+-- Q39 Find percentage of remote jobs.
+SELECT 
+ (COUNT(job_work_from_home) / (SELECT COUNT(*) FROM job_postings_fact)*100) AS total_jobs 
+FROM 
+  job_postings_fact
+WHERE 
+  job_work_from_home =true;
+
+
+-- Q40 Find average salary of remote jobs.
+SELECT 
+  job_work_from_home, AVG(salary_year_avg) AS avg_salary_of_remote_jobs 
+FROM 
+  job_postings_fact
+GROUP BY 
+ job_work_from_home
+HAVING 
+  job_work_from_home =true;
+
+
+-- Q41 Find countries having more than 1000 job postings.
+
+SELECT job_country, COUNT(*) AS total_jobs FROM job_postings_fact
+GROUP BY job_country
+HAVING COUNT(*) > 1000;
+
+
+
+-- Q42 Find companies having more than 50 job postings.
+SELECT company_id, COUNT(company_id) from job_postings_fact
+GROUP BY company_id
+HAVING COUNT(company_id) > 50;
+
+
+
+
+-- Q43 Find job titles with average salary above 150000.
+SELECT 
+  job_title_short, AVG(salary_year_avg) AS avg_salary 
+FROM 
+ job_postings_fact
+GROUP BY job_title_short
+HAVING AVG(salary_year_avg) > 150000;
+
+
+
+
+-- Q44 Find countries with average salary above 120000.
+SELECT 
+  job_country, AVG(salary_year_avg) AS avg_salary 
+FROM 
+  job_postings_fact
+GROUP BY job_country
+HAVING AVG(salary_year_avg) > 12000;
+
+
+
+
+-- Q45 Find schedule types having more than 500 postings.
+SELECT 
+  job_schedule_type, COUNT(job_schedule_type) AS job_type 
+FROM 
+  job_postings_fact
+GROUP BY 
+  job_schedule_type
+HAVING COUNT(job_schedule_type) > 500;
+
+
+
+-- Q46 Find companies with remote jobs only.
+SELECT company_id, COUNT(job_work_from_home) AS remote_jobs FROM job_postings_fact
+GROUP BY ALL
+HAVING job_work_from_home = true;
+
+
+
+
+-- Q47 Find countries with more than 100 remote jobs.
+SELECT 
+  job_country, COUNT(job_work_from_home) AS total_remote_jobs 
+FROM
+  job_postings_fact
+GROUP BY job_country, job_work_from_home
+HAVING COUNT(job_work_from_home = true) > 100
+
+
+
+-- Q48 Find companies paying average salary above 200000.
+SELECT 
+ company_id, AVG(salary_year_avg) AS avg_salary 
+FROM
+  job_postings_fact
+GROUP BY company_id
+HAVING AVG(salary_year_avg) > 200000;
+
+
+
+-- Q49 Find job titles with at least 500 postings.
+SELECT 
+ job_title_short, COUNT(job_title_short) AS total_jobs 
+FROM 
+  job_postings_fact
+GROUP BY job_title_short
+HAVING COUNT(job_title_short) > 500;
+
+
+
+
+-- Q50 Find companies that posted more than 100 jobs.
+SELECT 
+  company_id, COUNT(job_id) AS posted_job 
+FROM 
+  job_postings_fact
+GROUP BY company_id
+HAVING COUNT(job_id) > 100;
+
+
+
 
