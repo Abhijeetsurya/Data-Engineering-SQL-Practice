@@ -124,3 +124,90 @@ SELECT * FROM job_postings_fact
 WHERE salary_year_avg IS NULL;
 
 
+-- Q26 Count total jobs.
+SELECT COUNT(job_id) FROM job_postings_fact;
+
+
+--- Q27 Count total companies.
+
+SELECT COUNT(DISTINCT company_id) AS total_companies FROM job_postings_fact;
+
+
+-- Q28 Count remote jobs.
+SELECT COUNT(*) FROM job_postings_fact
+WHERE job_work_from_home IS true;
+
+
+-- Q29 Find average salary of Data Engineers.
+SELECT ROUND(AVG(salary_year_avg), 2) AS avg_salary_data_engineer FROM job_postings_fact
+WHERE job_title_short = 'Data Engineer'
+
+
+-- Q30 Find maximum salary.
+SELECT MAX(salary_year_avg) AS Max_salary FROM job_postings_fact;
+
+
+-- Q31 Find minimum salary.
+SELECT MIN(salary_year_avg) AS Min_salary FROM job_postings_fact;
+
+
+-- Q32 Count jobs by country.
+SELECT 
+  job_country, count(job_id) 
+FROM 
+  job_postings_fact
+GROUP BY 
+  job_country;
+
+
+  -- Q33 Count jobs by schedule type.
+SELECT 
+  job_schedule_type, COUNT(*) 
+FROM 
+  job_postings_fact
+GROUP BY 
+  job_schedule_type;
+
+
+-- Q33 Count jobs by schedule type.
+SELECT 
+  job_schedule_type, COUNT(*) 
+FROM 
+  job_postings_fact
+GROUP BY 
+  job_schedule_type;
+
+
+
+-- Q35 Find average salary by job title.
+SELECT 
+  job_title_short, AVG(salary_year_avg) AS avg_salary 
+FROM 
+  job_postings_fact
+GROUP BY 
+  job_title_short;
+
+
+
+-- 36 Find highest-paying country.
+SELECT job_country, salary_year_avg FROM job_postings_fact
+GROUP BY job_country, salary_year_avg
+ORDER BY salary_year_avg DESC
+LIMIT 1;
+
+
+
+-- Q37 Find top 10 countries by number of jobs.
+SELECT job_country, COUNT(job_id) AS total_jobs FROM job_postings_fact
+GROUP BY job_country
+ORDER BY total_jobs DESC
+LIMIT 10;
+
+
+
+-- Q38 Find total jobs with no degree requirement.
+SELECT * FROM job_postings_fact
+WHERE job_no_degree_mention =true;
+
+
+
