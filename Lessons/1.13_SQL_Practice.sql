@@ -13,7 +13,7 @@ SELECT * FROM job_postings_fact
 LIMIT 20;
 
 -- Q4 Find all distinct job titles (job_title_short).
-SELECT DISTINCT(job_title_short) FROM job_postings_fact;
+SELECT DISTINCT job_title_short FROM job_postings_fact;
 
 -- Q5 Find all distinct countries.
 
@@ -57,7 +57,13 @@ WHERE job_title_short LIKE '%Data Engineer%' OR job_title LIKE '%Data Engineer%'
 
 -- Q12 Find all Data Analyst jobs.
 SELECT * FROM job_postings_fact
-WHERE job_title_short LIKE '%Data Analyst%' OR job_title LIKE 'Data Analyst';
+WHERE job_title_short LIKE '%Data Analyst%' OR job_title LIKE '%Data Analyst%';
+
+
+
+-- Q13 Find jobs posted in the United States.
+SELECT * FROM job_postings_fact
+WHERE job_country = 'United States'
 
 
 -- Q13 Find jobs posted in the United States.
@@ -105,7 +111,7 @@ WHERE job_work_from_home IS true AND salary_year_avg>150000;
 
 -- Q22 Find jobs whose title contains "Engineer".  
 SELECT * FROM job_postings_fact
-WHERE job_title_short LIKE '%Engineer%' OR job_title LIKE '%Engineer%'
+WHERE job_title_short LIKE '%Engineer%' OR job_title LIKE '%Engineer%';
 
 -- Q23 Find jobs whose title starts with "Senior".
 
@@ -139,7 +145,7 @@ WHERE job_work_from_home IS true;
 
 -- Q29 Find average salary of Data Engineers.
 SELECT ROUND(AVG(salary_year_avg), 2) AS avg_salary_data_engineer FROM job_postings_fact
-WHERE job_title_short = 'Data Engineer'
+WHERE job_title_short = 'Data Engineer';
 
 
 -- Q30 Find maximum salary.
@@ -187,12 +193,14 @@ GROUP BY
   job_title_short;
 
 
-
 -- 36 Find highest-paying country.
-SELECT job_country, salary_year_avg FROM job_postings_fact
+SELECT 
+ job_country, AVG(salary_year_avg) AS avg_salary
+FROM job_postings_fact
 GROUP BY job_country, salary_year_avg
 ORDER BY salary_year_avg DESC
 LIMIT 1;
+
 
 
 -- Q37 Find top 10 countries by number of jobs.
@@ -210,7 +218,7 @@ WHERE job_no_degree_mention =true;
 
 -- Q39 Find percentage of remote jobs.
 SELECT 
- ROUND((COUNT(*) / (SELECT COUNT(*) FROM job_postings_fact)*100),2) AS percentage_of_wfm_jobs
+ ROUND((COUNT(*) / (SELECT COUNT(*) FROM job_postings_fact)*100.00),2) AS percentage_of_wfm_jobs
 FROM 
   job_postings_fact
 WHERE 
@@ -286,6 +294,12 @@ GROUP BY ALL
 HAVING job_work_from_home = true;
 
 
+-- Q46 Find companies with remote jobs.
+SELECT company_id, COUNT(*) AS remote_jobs FROM job_postings_fact
+WHERE job_work_from_home = true
+GROUP BY company_id;
+
+
 
 
 -- Q47 Find countries with more than 100 remote jobs.
@@ -295,8 +309,7 @@ FROM
   job_postings_fact
 WHERE job_work_from_home=TRUE
 GROUP BY job_country, job_work_from_home
-HAVING COUNT(job_work_from_home = true) > 100
-
+HAVING COUNT(*) > 100;
 
 
 -- Q48 Find companies paying average salary above 200000.
