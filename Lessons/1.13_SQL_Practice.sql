@@ -9,7 +9,7 @@ job_postings_fact;
 
 
 -- Q3 Display the first 20 rows.
-SELECT * FROM job_postings_fact;
+SELECT * FROM job_postings_fact
 LIMIT 20;
 
 -- Q4 Find all distinct job titles (job_title_short).
@@ -66,8 +66,7 @@ WHERE job_country LIKE 'United States';
 
 -- Q14 Find remote Data Engineer jobs.
 SELECT * FROM job_postings_fact
-WHERE job_work_from_home = true;
-
+WHERE job_work_from_home = true AND job_title_short = 'Data Engineer';
 
 -- Q15 Find jobs with salary above 100000.
 SELECT * FROM job_postings_fact
@@ -121,7 +120,7 @@ WHERE job_via = 'via LinkedIn'
 
 -- Q25 Find jobs with NULL salary.
 SELECT * FROM job_postings_fact
-WHERE salary_year_avg IS NULL;
+WHERE salary_year_avg IS NULL AND salary_hour_avg IS NULL;
 
 
 -- Q26 Count total jobs.
@@ -169,13 +168,13 @@ GROUP BY
   job_schedule_type;
 
 
--- Q33 Count jobs by schedule type.
+-- Q34 Find average salary by country.
 SELECT 
-  job_schedule_type, COUNT(*) 
+  job_country, AVG(salary_year_avg) AS avg_salary_by_country
 FROM 
   job_postings_fact
 GROUP BY 
-  job_schedule_type;
+  job_country;
 
 
 
@@ -196,7 +195,6 @@ ORDER BY salary_year_avg DESC
 LIMIT 1;
 
 
-
 -- Q37 Find top 10 countries by number of jobs.
 SELECT job_country, COUNT(job_id) AS total_jobs FROM job_postings_fact
 GROUP BY job_country
@@ -206,18 +204,21 @@ LIMIT 10;
 
 
 -- Q38 Find total jobs with no degree requirement.
-SELECT * FROM job_postings_fact
+SELECT COUNT(*) AS total_jobs FROM job_postings_fact
 WHERE job_no_degree_mention =true;
 
 
 -- Q39 Find percentage of remote jobs.
 SELECT 
- (COUNT(job_work_from_home) / (SELECT COUNT(*) FROM job_postings_fact)*100) AS total_jobs 
+ ROUND((COUNT(*) / (SELECT COUNT(*) FROM job_postings_fact)*100),2) AS percentage_of_wfm_jobs
 FROM 
   job_postings_fact
 WHERE 
   job_work_from_home =true;
 
+  -- Q40 Find average salary of remote jobs. 
+SELECT AVG(salary_year_avg) FROM job_postings_fact
+WHERE job_work_from_home = true;
 
 -- Q40 Find average salary of remote jobs.
 SELECT 
@@ -263,7 +264,7 @@ SELECT
 FROM 
   job_postings_fact
 GROUP BY job_country
-HAVING AVG(salary_year_avg) > 12000;
+HAVING AVG(salary_year_avg) > 120000;
 
 
 
@@ -279,7 +280,7 @@ HAVING COUNT(job_schedule_type) > 500;
 
 
 
--- Q46 Find companies with remote jobs only.
+-- Q46 Find companies with remote jobs.
 SELECT company_id, COUNT(job_work_from_home) AS remote_jobs FROM job_postings_fact
 GROUP BY ALL
 HAVING job_work_from_home = true;
@@ -289,9 +290,10 @@ HAVING job_work_from_home = true;
 
 -- Q47 Find countries with more than 100 remote jobs.
 SELECT 
-  job_country, COUNT(job_work_from_home) AS total_remote_jobs 
+  job_country, COUNT(*) AS remote_jobs 
 FROM
   job_postings_fact
+WHERE job_work_from_home=TRUE
 GROUP BY job_country, job_work_from_home
 HAVING COUNT(job_work_from_home = true) > 100
 
@@ -303,7 +305,7 @@ SELECT
 FROM
   job_postings_fact
 GROUP BY company_id
-HAVING AVG(salary_year_avg) > 200000;
+HAVING AVG(salary_year_avg) >= 200000;
 
 
 
