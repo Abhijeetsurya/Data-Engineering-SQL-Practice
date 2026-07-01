@@ -13,7 +13,7 @@ SELECT
 FROM 
   job_postings_fact
 LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-WHERE job_title = 'Data Engineer' OR job_title_short ='Data Engineer';
+WHERE job_title = 'Data Engineer';
 
 
 -- Q53 Display all jobs and their company website link.
@@ -35,13 +35,13 @@ WHERE job_postings_fact.job_location = 'India';
 
 -- Q54 Find all companies that posted jobs in India(Where city and state also mention).
 
-SELECT  
-  company_dim.name, job_postings_fact.job_country 
-FROM 
-  job_postings_fact
-LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-WHERE job_postings_fact.job_location LIKE '%India%';
-
+SELECT DISTINCT
+c.name,
+j.job_country
+FROM job_postings_fact j
+JOIN company_dim c
+ON j.company_id = c.company_id
+WHERE j.job_country = 'India';
 
 
 
@@ -89,10 +89,12 @@ HAVING COUNT(DISTINCT job_id) > 100;
 
 -- Q59 Find the average salary offered by each company.
 
-SELECT company_dim.name AS company_name, ROUND(AVG(job_postings_fact.salary_year_avg), 2) AS avg_salary
-FROM job_postings_fact LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-GROUP BY company_dim.company_id, company_dim.name;
-
+SELECT 
+  company_dim.name AS company_name, ROUND(AVG(job_postings_fact.salary_year_avg), 2) AS avg_salary
+FROM 
+  job_postings_fact LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+GROUP BY company_dim.company_id, company_dim.name, job_postings_fact.salary_year_avg
+HAVING salary_year_avg IS NOT NULL;
 
 -- Q60 Find the top 10 highest-paying companies.
 
@@ -131,7 +133,7 @@ FROM
   job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_dim.skill_id = skills_job_dim.skill_id
-WHERE job_postings_fact.job_title ='Data Engineer';
+WHERE job_postings_fact.job_title_short ='Data Engineer';
 
 
 -- Q64 Find the number of jobs requiring each skill.
@@ -157,7 +159,6 @@ ORDER BY total_jobs_for_skill DESC
 LIMIT 20;
 
 
--- Q66 Find all skills required for remote Data Engineer jobs.
 -- Q66 Find all skills required for remote Data Engineer jobs.
 SELECT  
    job_postings_fact.job_id, job_postings_fact.job_title_short, skills_dim.skills, job_postings_fact.job_work_from_home
