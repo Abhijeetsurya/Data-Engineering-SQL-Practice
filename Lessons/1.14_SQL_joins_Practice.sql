@@ -96,9 +96,15 @@ GROUP BY company_dim.company_id, company_dim.name;
 
 -- Q60 Find the top 10 highest-paying companies.
 
-SELECT company_dim.name AS company_name, job_postings_fact.salary_year_avg 
-FROM job_postings_fact LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-ORDER BY job_postings_fact.salary_year_avg DESC
+SELECT
+c.name,
+ROUND(AVG(j.salary_year_avg),2) AS avg_salary
+FROM job_postings_fact j
+LEFT JOIN company_dim c
+ON j.company_id = c.company_id
+WHERE salary_year_avg IS NOT NULL
+GROUP BY c.name
+ORDER BY avg_salary DESC
 LIMIT 10;
 
 
@@ -152,14 +158,14 @@ LIMIT 20;
 
 
 -- Q66 Find all skills required for remote Data Engineer jobs.
+-- Q66 Find all skills required for remote Data Engineer jobs.
 SELECT  
    job_postings_fact.job_id, job_postings_fact.job_title_short, skills_dim.skills, job_postings_fact.job_work_from_home
 FROM
   job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_job_dim.skill_id =skills_dim.skill_id 
-WHERE job_work_from_home =true;
-
+WHERE job_work_from_home =true AND job_title_short = 'Data Engineer';
 
 
 -- Q67 Find the number of distinct skills required by each job.
@@ -199,11 +205,11 @@ GROUP BY job_postings_fact.company_id, company_dim.name;
 
 -- Q70 Find the top 10 most demanded skills for Data Engineer jobs.
 SELECT 
-    company_dim.name, COUNT(job_postings_fact.job_id) AS total_sql_jobs
-FROM
-    job_postings_fact
+   skills_dim.skills, COUNT(skills_dim.skills) AS required_in_jobs
+FROM job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
-LEFT JOIN company_dim ON company_dim.company_id = job_postings_fact.company_id
-WHERE skills_dim.skills ='sql'
-GROUP BY job_postings_fact.company_id, company_dim.name;
+WHERE job_title_short = 'Data Engineer' 
+GROUP BY skills_dim.skills
+ORDER BY required_in_jobs DESC
+LIMIT 10;
