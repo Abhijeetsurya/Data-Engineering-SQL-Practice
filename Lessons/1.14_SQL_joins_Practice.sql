@@ -235,22 +235,24 @@ WHERE job_postings_fact.salary_year_avg IS NOT NULL
 GROUP BY job_title_short
 HAVING COUNT(salary_year_avg) > 100;
 
-
 -- Q73 Find the highest average salary among all job titles.
 SELECT 
   job_postings_fact.job_title_short, AVG(salary_year_avg) AS avg_salary 
 FROM 
   job_postings_fact
-GROUP BY job_title_short;
-
+GROUP BY job_title_short
+ORDER BY avg_salary DESC
+LIMIT 1;
 
 -- Q74 Find the country with the highest average Data Engineer salary.
 SELECT 
-  job_postings_fact.job_country, AVG(job_postings_fact.salary_year_avg) AS avg_data_engineer_salary 
+  job_postings_fact.job_country, ROUND(AVG(job_postings_fact.salary_year_avg)) AS avg_data_engineer_salary 
 FROM
   job_postings_fact
 WHERE job_title_short  ='Data Engineer' AND job_postings_fact.salary_year_avg IS NOT NULL
-GROUP BY job_title_short, job_country;
+GROUP BY job_title_short, job_country
+ORDER BY avg_data_engineer_salary DESC
+LIMIT 1;
 
 
 -- Q75 Find the number of remote jobs in each country. Order descending.
@@ -258,10 +260,9 @@ SELECT
   job_postings_fact.job_country, COUNT(job_postings_fact.job_title_short) AS total_jobs
 FROM 
   job_postings_fact
-GROUP BY job_postings_fact.job_country, job_postings_fact.job_title_short
-HAVING job_postings_fact.job_title_short = 'Data Engineer'
+GROUP BY job_postings_fact.job_country, job_postings_fact.job_work_from_home
+HAVING job_postings_fact.job_work_from_home= true
 ORDER BY total_jobs DESC; 
-
 
 -- Q76 Find the average salary of remote and non-remote jobs.
 SELECT 
@@ -283,17 +284,14 @@ HAVING job_posted_country > 3
 ORDER BY job_posted_country DESC
 
 
-
 -- Q78 Find companies with at least 50 remote jobs.
 SELECT 
-  job_postings_fact.job_country, COUNT(job_postings_fact.job_work_from_home) AS total_remote_jobs 
+   company_dim.name, COUNT(job_postings_fact.job_id) AS total_remote_jobs 
 FROM 
   job_postings_fact
-GROUP BY job_postings_fact.job_work_from_home, job_postings_fact.job_country
+LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
+GROUP BY job_postings_fact.job_work_from_home, job_postings_fact.job_country, company_dim.name
 HAVING job_postings_fact.job_work_from_home = true AND total_remote_jobs > 50;
-
-
-
 
 -- Q79 Find job titles with more than 1000 postings and average salary above 150000.
 SELECT 
@@ -301,7 +299,7 @@ SELECT
 FROM 
   job_postings_fact
 GROUP BY job_postings_fact.job_title_short
-HAVING total_jobs > 1000 and avg_salary > 15000;
+HAVING total_jobs > 1000 and avg_salary > 150000;
 
 
 
@@ -317,10 +315,7 @@ HAVING AVG(job_postings_fact.salary_year_avg) > (SELECT AVG(job_postings_fact.sa
 
 -- Q81 Count all rows in job_postings_fact.
 
-SELECT   
-  COUNT(job_postings_fact.*) AS total_rows 
-FROM 
-  job_postings_fact;
+SELECT COUNT(*) AS total_rows FROM job_postings_fact;
 
 -- Q82 Count rows where salary is available.
 SELECT 
@@ -402,13 +397,14 @@ LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
 GROUP BY job_postings_fact.company_id, company_dim.name
 
 -- Q92 Find the average salary for each company. Ignore NULL salaries.
-SELECT 
-  job_postings_fact.company_id, company_dim.name, AVG(job_postings_fact.salary_year_avg) AS avg_salary
-FROM 
-  job_postings_fact 
-LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-GROUP BY job_postings_fact.company_id, company_dim.name, job_postings_fact.salary_year_avg
-HAVING job_postings_fact.salary_year_avg IS NOT NULL;
+SELECT
+c.name,
+AVG(j.salary_year_avg)
+FROM job_postings_fact j
+JOIN company_dim c
+ON j.company_id = c.company_id
+WHERE j.salary_year_avg IS NOT NULL
+GROUP BY c.name;
 
 
 -- Q93 Find the top 20 companies by average salary.
@@ -417,8 +413,8 @@ SELECT
 FROM 
   job_postings_fact 
 LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-GROUP BY job_postings_fact.company_id, company_dim.name, job_postings_fact.salary_year_avg
-HAVING job_postings_fact.salary_year_avg IS NOT NULL
+WHERE job_postings_fact.salary_year_avg IS NOT NULL
+GROUP BY job_postings_fact.company_id, company_dim.name
 ORDER BY avg_salary DESC
 LIMIT 20;
 
@@ -439,7 +435,7 @@ FROM
   job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
-WHERE skills_dim.skills = 'sql'
+WHERE skills_dim.skills = 'sql' AND job_postings_fact.salary_year_avg IS NOT NULL
 GROUP BY skills_dim.skills;
 
 
@@ -450,6 +446,7 @@ FROM
   job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE job_postings_fact.salary_year_avg IS NOT NULL
 GROUP BY skills_dim.skills;
 
 
@@ -461,15 +458,17 @@ FROM
   job_postings_fact
 LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
 LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE job_postings_fact.salary_year_Avg IS NOT NULL
 GROUP BY skills_dim.skills
 ORDER BY avg_salary DESC
 LIMIT 10;
 
 
-
 -- Q98 Find the top 10 most demanded skills among Data Engineers.
-SELECT skills_dim.skills, COUNT(skills_job_dim.skill_id) AS skill_required_in_jobs FROM skills_job_dim
-LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id,
+SELECT skills_dim.skills, COUNT(skills_job_dim.skill_id) AS skill_required_in_jobs
+FROM skills_job_dim LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE skills_job_dim.job_id IN (SELECT job_id FROM job_postings_fact 
+WHERE job_title_short = 'Data Engineer')
 GROUP BY skills_job_dim.skill_id, skills_dim.skills
 ORDER BY skill_required_in_jobs DESC
 LIMIT 10;
@@ -484,13 +483,7 @@ GROUP BY company_dim.name, job_postings_fact.job_title_short, skills_dim.skills;
 
 
 -- Q100 Find companies that posted more than 50 Data Engineer jobs.
-SELECT 
-  company_dim.name, job_postings_fact.job_title_short, skills_dim.skills, COUNT(job_postings_fact.job_id) AS total_jobs
-FROM job_postings_fact
-LEFT JOIN company_dim ON job_postings_fact.company_id = company_dim.company_id
-LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
-LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
-WHERE job_postings_fact.job_title_short = 'Data Engineer'
-GROUP BY company_dim.name, job_postings_fact.job_title_short, skills_dim.skills
-HAVING COUNT(job_postings_fact.job_id) > 50;
+SELECT company_dim.name, COUNT(job_postings_fact.job_id) FROM job_postings_fact
+LEFT JOIN company_dim ON job_postings_fact.company_id =company_dim.company_id
+GROUP BY company_dim.company_id, company_dim.name;
 
