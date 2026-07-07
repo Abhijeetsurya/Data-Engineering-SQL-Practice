@@ -1,49 +1,27 @@
----  CRETAE DATABASE
-
-CREATE DATABASE job_mart;
+---  .read Lessons/1.16_DDL_DML_1.sql
 
 
---- SHOW DATABASE
+-- Show available databases
 SHOW DATABASES;
 
-
--- DROP DATABASE IF EXISTS
-DROP DATABASE IF EXISTS job_mart;
-
-SELECT * FROM information_schema.schemata;
-
-
--- CREATE SCHEMA
-
-SELECT * FROM information_schema.schemata;
-
-
-CREATE SCHEMA job_mart.staging;
-
-USE job_mart;
-
-
+-- Create the schema if it doesn't exist
 CREATE SCHEMA IF NOT EXISTS staging;
 
-DROP SCHEMA staging;
-
-
-
-CREATE TABLE preferred_roles(
+-- Create the table in the default schema (main)
+CREATE TABLE IF NOT EXISTS preferred_roles (
     role_id INTEGER,
     role_name VARCHAR
 );
 
+-- Show all tables
+SELECT *
+FROM information_schema.tables;
 
-SELECT * FROM information_schema.tables
-WHERE table_catalog ='job_mart';
-
-CREATE TABLE staging.preferred_roles(
+-- Create the same table in the staging schema
+CREATE TABLE IF NOT EXISTS staging.preferred_roles (
     role_id INTEGER,
     role_name VARCHAR
 );
 
-
-DROP TABLE preferred_roles;
-
-
+-- Drop the table if needed
+DROP TABLE IF EXISTS preferred_roles;
