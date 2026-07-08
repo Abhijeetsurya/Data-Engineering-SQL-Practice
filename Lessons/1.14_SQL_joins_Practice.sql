@@ -487,3 +487,113 @@ SELECT company_dim.name, COUNT(job_postings_fact.job_id) FROM job_postings_fact
 LEFT JOIN company_dim ON job_postings_fact.company_id =company_dim.company_id
 GROUP BY company_dim.company_id, company_dim.name;
 
+
+
+-- Q101 Find the top 5 countries with the highest average salary for Data Engineer jobs.
+SELECT 
+  job_country, AVG(salary_year_avg) AS avg_salary 
+FROM 
+  job_postings_fact
+WHERE job_title_short ='Data Engineer'
+GROUP BY job_country
+order by avg_salary DESC
+LIMIT 5;
+
+
+
+-- Q102 Find companies that have posted jobs in at least 5 different countries.
+SELECT 
+  company_id, COUNT( DISTINCT job_country) AS total_country
+FROM 
+  job_postings_fact
+GROUP BY company_id
+HAVING total_country > 5;
+
+
+-- Q103 Find the top 10 companies by number of remote Data Engineer jobs.
+SELECT 
+  job_postings_fact.company_id, company_dim.name, COUNT(job_postings_fact.job_id) AS total_jobs
+FROM 
+  job_postings_fact
+LEFT JOIN company_dim ON job_postings_fact.company_id =company_dim.company_id
+WHERE job_postings_fact.job_title_short ='Data Engineer' AND job_work_from_home =true
+GROUP BY job_postings_fact.company_id, company_dim.name
+ORDER BY total_jobs DESC
+LIMIT 10;
+
+
+
+-- Q104 Find the average salary for each skill. Only include skills that appear in at least 100 jobs.
+SELECT 
+    skills_dim.skills, AVG(salary_year_avg) AS avg_salary, COUNT(job_postings_fact.job_id) 
+FROM 
+    job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+GROUP BY skills_dim.skills
+HAVING COUNT(skills_job_dim.skill_id) > 100;
+
+
+-- Q105 Find the top 20 skills required by Data Engineer jobs that are remote.
+SELECT 
+    skills_dim.skills, COUNT(job_postings_fact.job_id) AS total_jobs 
+FROM 
+    job_postings_fact
+LEFT JOIN skills_job_dim ON skills_job_dim.job_id = job_postings_fact.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+WHERE job_postings_fact.job_title_short ='Data Engineer' AND job_postings_fact.job_work_from_home =true
+GROUP BY skills_dim.skills
+ORDER BY total_jobs DESC
+LIMIT 20;
+
+
+-- Q106 Find companies whose average salary is greater than the overall average salary.
+SELECT 
+    company_dim.name, job_postings_fact.company_id, AVG(salary_year_avg) AS avg_salary 
+FROM 
+    job_postings_fact
+LEFT JOIN company_dim ON company_dim.company_id = job_postings_fact.company_id
+GROUP BY job_postings_fact.company_id, company_dim.name 
+HAVING AVG(salary_year_avg) > (SELECT AVG(salary_year_avg) FROM job_postings_fact);
+
+
+-- Q107 Find countries where the percentage of remote jobs is above 50%.
+SELECT 
+    job_country,
+    AVG(job_work_from_home::int) * 100 AS remote_percentage
+FROM 
+    job_postings_fact
+GROUP BY 
+    job_country
+HAVING 
+    AVG(job_work_from_home::int) > 0.5;
+
+
+-- Q108 Find companies that have posted both Data Analyst and Data Engineer jobs.
+SELECT 
+    c.name
+FROM 
+    job_postings_fact j
+JOIN 
+    company_dim c ON j.company_id = c.company_id
+WHERE 
+    j.job_title_short IN ('Data Analyst', 'Data Engineer')
+GROUP BY 
+    c.name
+HAVING 
+    COUNT(DISTINCT j.job_title_short) = 2;
+
+
+-- Q109 Find the top 10 companies hiring for SQL skills.
+SELECT 
+    company_dim.name, COUNT(skills_dim.skills) AS total_jobs
+FROM 
+    job_postings_fact
+LEFT JOIN skills_job_dim ON job_postings_fact.job_id = skills_job_dim.job_id
+LEFT JOIN skills_dim ON skills_job_dim.skill_id = skills_dim.skill_id
+LEFT JOIN company_dim ON company_dim.company_id = job_postings_fact.company_id
+GROUP BY company_dim.name, skills_dim.skills
+HAVING skills_dim.skills = 'sql'
+ORDER BY total_jobs DESC
+LIMIT 10;
+

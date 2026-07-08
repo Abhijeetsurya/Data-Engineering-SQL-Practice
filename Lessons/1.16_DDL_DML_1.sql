@@ -9,7 +9,7 @@ CREATE SCHEMA IF NOT EXISTS staging;
 
 -- Create the table in the default schema (main)
 CREATE TABLE IF NOT EXISTS preferred_roles (
-    role_id INTEGER,
+    role_id INTEGER, 
     role_name VARCHAR
 );
 
@@ -19,9 +19,20 @@ FROM information_schema.tables;
 
 -- Create the same table in the staging schema
 CREATE TABLE IF NOT EXISTS staging.preferred_roles (
-    role_id INTEGER,
+    role_id INTEGER PRIMARY KEY,
     role_name VARCHAR
 );
 
 -- Drop the table if needed
-DROP TABLE IF EXISTS preferred_roles;
+ DROP TABLE IF EXISTS preferred_roles;
+
+
+
+INSERT INTO staging.preferred_roles(role_id, role_name)
+VALUES(1, 'Data Engineer'),
+      (2, 'Senior Data Engineer');
+
+SELECT * FROM staging.preferred_roles;
+
+INSERT INTO staging.preferred_roles(role_id, role_name)
+VALUES(3, 'Software Engineer');
