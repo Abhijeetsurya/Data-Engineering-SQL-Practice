@@ -1,13 +1,22 @@
 ---  .read Lessons/1.16_DDL_DML_1.sql
 
-CREATE DATABASE job_mart;
+CREATE DATABASE jobs_mart;
 -- Show available databases
 SHOW DATABASES;
 
+--- DROP DATABASE jobs_mart;
+
+
+
 SELECT * FROM information_schema.schemata;
 
+
 -- Create the schema if it doesn't exist
-CREATE SCHEMA IF NOT EXISTS jobs_mart.staging;
+CREATE SCHEMA IF NOT EXISTS staging;
+
+
+--- DROP SCHEMA staging;
+
 
 -- Create the table in the default schema (main)
 CREATE TABLE IF NOT EXISTS preferred_roles (
@@ -16,8 +25,9 @@ CREATE TABLE IF NOT EXISTS preferred_roles (
 );
 
 -- Show all tables
-SELECT *
-FROM information_schema.tables;
+
+SELECT * FROM information_schema.tables
+WHERE table_Catalog = 'jobs_mart';
 
 -- Create the same table in the staging schema
 CREATE TABLE IF NOT EXISTS staging.preferred_roles (
@@ -26,7 +36,7 @@ CREATE TABLE IF NOT EXISTS staging.preferred_roles (
 );
 
 -- Drop the table if needed
- DROP TABLE IF EXISTS preferred_roles;
+ DROP TABLE IF EXISTS main.preferred_roles;
 
 
 
@@ -60,5 +70,11 @@ WHERE role_id = 3;
 
 SELECT * FROM staging.preferred_roles;
 
+DROP preferred_roles;
+
 ALTER TABLE staging.preferred_roles
 RENAME TO priority_roles;
+
+SELECT * FROM staging.preferred_roles;
+
+
