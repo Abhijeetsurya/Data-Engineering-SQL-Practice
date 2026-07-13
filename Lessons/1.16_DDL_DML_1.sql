@@ -56,5 +56,19 @@ RENAME TO priority_roles;
 -- 7. Final Select (using the NEW table name)
 SELECT * FROM staging.priority_roles;
 
+# RENAME COLUMN
 
-SELECT * FROM data_job.job_postings_fact;
+ALTER TABLE staging.priority_roles 
+RENAME COLUMN is_preferred TO priority_lvl;
+
+-- CHANGE DATA TYPE
+
+ALTER TABLE staging.priority_roles
+ALTER COLUMN priority_lvl TYPE INT;
+
+
+UPDATE staging.priority_roles
+SET priority_lvl = 3
+WHERE role_id = 3;
+
+SELECT * FROM staging.priority_roles;
