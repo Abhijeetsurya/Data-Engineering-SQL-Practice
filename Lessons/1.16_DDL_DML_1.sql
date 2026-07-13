@@ -1,80 +1,60 @@
 ---  .read Lessons/1.16_DDL_DML_1.sql
-
-CREATE DATABASE jobs_mart;
+CREATE DATABASE IF NOT EXISTS jobs_mart;
 -- Show available databases
 SHOW DATABASES;
 
---- DROP DATABASE jobs_mart;
+-- DROP DATABASE IF EXISTS jobs_mart;
 
+SELECT * FROM information_schema.schemata;
+
+USE jobs_mart;
+
+-- 1. Setup Schema
+CREATE SCHEMA IF NOT EXISTS jobs_mart.staging;
 
 
 SELECT * FROM information_schema.schemata;
 
 
--- Create the schema if it doesn't exist
-CREATE SCHEMA IF NOT EXISTS staging;
 
+-- DROP schema
+DROP SCHEMA IF EXISTS jobs_mart.staging;
 
---- DROP SCHEMA staging;
-
-
--- Create the table in the default schema (main)
-CREATE TABLE IF NOT EXISTS preferred_roles (
-    role_id INTEGER, 
-    role_name VARCHAR
-);
-
--- Show all tables
-
-SELECT * FROM information_schema.tables
-WHERE table_Catalog = 'jobs_mart';
-
--- Create the same table in the staging schema
-CREATE TABLE IF NOT EXISTS staging.preferred_roles (
+-- 2. Create the table in the staging schema
+CREATE TABLE IF NOT EXISTS jobs_mart.staging.preferred_roles (
     role_id INTEGER PRIMARY KEY,
     role_name VARCHAR
 );
 
--- Drop the table if needed
- DROP TABLE IF EXISTS main.preferred_roles;
+TRUNCATE TABLE staging.preferred_roles;
 
-
-
+-- 3. Insert initial data
 INSERT INTO staging.preferred_roles(role_id, role_name)
 VALUES(1, 'Data Engineer'),
       (2, 'Senior Data Engineer');
 
-SELECT * FROM staging.preferred_roles;
-
 INSERT INTO staging.preferred_roles(role_id, role_name)
 VALUES(3, 'Software Engineer');
 
-
-
------------------ DML ----------------------------------------
-
-
+-- 4. DML: Alter table to add column
 ALTER TABLE staging.preferred_roles
-ADD COLUMN preferred_roles BOOLEAN;
+ADD COLUMN is_preferred BOOLEAN; -- Changed column name to be more descriptive
 
-SELECT * FROM staging.preferred_roles;
+-- 5. Update data
+UPDATE staging.preferred_roles
+SET is_preferred = TRUE
+WHERE role_id IN (1, 2);
 
 UPDATE staging.preferred_roles
-SET preferred_roles =TRUE
-WHERE role_id = 1 OR role_id = 2;
-
-UPDATE staging.preferred_roles
-SET preferred_roles = FALSE
+SET is_preferred = FALSE
 WHERE role_id = 3;
 
-
-SELECT * FROM staging.preferred_roles;
-
-DROP preferred_roles;
-
+-- 6. Rename table
 ALTER TABLE staging.preferred_roles
 RENAME TO priority_roles;
 
-SELECT * FROM staging.preferred_roles;
+-- 7. Final Select (using the NEW table name)
+SELECT * FROM staging.priority_roles;
 
 
+SELECT * FROM data_job.job_postings_fact;
