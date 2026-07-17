@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS jobs_mart;
 -- Show available databases
 SHOW DATABASES;
 
--- DROP DATABASE IF EXISTS jobs_mart;
+---- DROP DATABASE IF EXISTS jobs_mart;
 
 SELECT * FROM information_schema.schemata;
 
@@ -18,7 +18,7 @@ SELECT * FROM information_schema.schemata;
 
 
 -- DROP schema
-DROP SCHEMA IF EXISTS jobs_mart.staging;
+-- DROP SCHEMA IF EXISTS jobs_mart.staging;
 
 -- 2. Create the table in the staging schema
 CREATE TABLE IF NOT EXISTS jobs_mart.staging.preferred_roles (
@@ -71,4 +71,4 @@ UPDATE staging.priority_roles
 SET priority_lvl = 3
 WHERE role_id = 3;
 
-SELECT * FROM staging.priority_roles;
+ 
