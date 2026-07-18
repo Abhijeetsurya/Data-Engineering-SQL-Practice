@@ -1,0 +1,101 @@
+-- DDL & DML Interview Practice (Q1–Q15)
+/** Q1. Which SQL command is used to create a new table?
+
+A. INSERT
+
+B. CREATE  -- correct
+
+C. ALTER
+
+D. UPDATE
+
+
+Q2. Which category does CREATE TABLE belong to?
+
+A. DML
+
+B. DDL  -- correct
+
+C. DCL
+
+D. TCL
+
+Q3. What is the difference between DELETE, TRUNCATE, and DROP? Explain in your own words.
+    DELETE - DELETE SPECIFIC RECORD FROM TABLE
+    TRUNCATE - DELETE ALL RECORD FROM TABLE AT A TIME
+    DROP - DELETE DATABASE OR TABLE
+
+Q4. Which command removes all rows from a table but keeps the table structure?
+
+A. DROP
+
+B. DELETE
+
+C. TRUNCATE -- correct
+
+D. REMOVE
+
+Q5. Which command completely removes the table from the database?
+
+A. DELETE
+
+B. TRUNCATE
+
+C. DROP   -- correct
+
+D. ALTER
+
+Q6. What is the difference between CHAR(20) and VARCHAR(20)?
+  - CHAR(20) - We can only store 20 character long string
+  - VARCHAR(20) - We can store 1-20 long character
+
+Q7. Which data type would you choose for storing:
+Employee Name - VARCHAR
+Age - INT
+Salary (₹75,250.50) - FLOAT
+Date of Joining - DATE
+Email Address - VARCHAR
+Is Remote Employee (Yes/No) BOOL
+
+Q8. What is the purpose of a PRIMARY KEY?
+   - To make column to store unquie values and must not null
+
+Q9. Can a PRIMARY KEY contain NULL values?
+
+A. Yes
+
+B. No    -- correct
+
+Q10. What is the difference between a PRIMARY KEY and a UNIQUE constraint?
+    - PRIMARY KEY - UNQUIE AND NOT NULL
+    - UNIQUE - I
+    
+Q11. What is the purpose of a FOREIGN KEY?
+    - FOREIGN KEY IS USED MAKE REFERENCE BETWEEN TWO OR MORE TABLES
+
+Q12. What will happen if you try to insert duplicate values into a PRIMARY KEY column?
+    - it will return error
+
+Q13. What is the purpose of a DEFAULT constraint?
+    - To store default value if no value is seted
+
+Give one example.
+   - Set Salary 0 if no value is insert
+
+Q14. What is the purpose of a CHECK constraint?
+    - CHECK IS USE TO MAKE conditional INSERT 
+
+Example: 
+salary > 0
+
+Why would we use it?
+-- We use it to prevent to insert wrong value
+
+Q15. Suppose you execute:
+
+UPDATE employees
+SET salary = salary * 2;
+
+There is no WHERE clause.
+What happens?
+-- all the values in column salary multiplied by 2
