@@ -31,3 +31,19 @@ LEFT JOIN data_jobs.main.company_dim AS cd
 
 SELECT * FROM staging.job_postings_flat
 LIMIT 10;
+
+SELECT COUNT(*) FROM staging.job_postings_flat;
+
+SELECT * FROM staging.priority_roles;
+
+--- CREATE VIEW
+CREATE VIEW staging.priority_flat_view AS 
+SELECT 
+    jpf.* 
+FROM 
+    staging.job_postings_flat AS jpf
+JOIN staging.priority_roles AS r 
+    ON jpf.job_title_short = r.role_name
+WHERE r.priority_lvl = 1;
+
+SELECT * FROM staging.priority_flat_view;
