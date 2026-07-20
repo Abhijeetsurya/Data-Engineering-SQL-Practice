@@ -1,8 +1,11 @@
+
+--  .read Lessons/1.17_DDL_DML_2.sql
+
 /* Cleaned and formatted query */
 USE jobs_mart;
 
  
-CREATE TABLE staging.job_postings_flat AS
+CREATE OR REPLACE TABLE staging.job_postings_flat AS
 SELECT
     jpf.job_id,
     jpf.job_title_short,
@@ -36,8 +39,12 @@ SELECT COUNT(*) FROM staging.job_postings_flat;
 
 SELECT * FROM staging.priority_roles;
 
---- CREATE VIEW
-CREATE VIEW staging.priority_flat_view AS 
+
+
+----------------------------------------- CREATE VIEW ----------------------------------------------------------
+
+
+CREATE OR REPLACE VIEW staging.priority_flat_view AS 
 SELECT 
     jpf.* 
 FROM 
@@ -47,3 +54,17 @@ JOIN staging.priority_roles AS r
 WHERE r.priority_lvl = 1;
 
 SELECT * FROM staging.priority_flat_view;
+
+
+
+---------------------------------------   CREATE TAMP TABLE  ----------------------------------------------------
+
+SELECT 
+    job_title_short, COUNT(*) AS jobs_count 
+FROM 
+    staging.priority_flat_view
+GROUP BY job_title_short
+ORDER BY jobs_count DESC;
+
+SELECT * FROM staging.priority_flat_view
+WHERE job_title_short = 'Senior Data Engineer';
