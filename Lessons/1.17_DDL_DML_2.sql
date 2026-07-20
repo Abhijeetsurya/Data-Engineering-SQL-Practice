@@ -66,5 +66,18 @@ FROM
 GROUP BY job_title_short
 ORDER BY jobs_count DESC;
 
-SELECT * FROM staging.priority_flat_view
+
+CREATE TEMPORARY TABLE senior_job__post_flat AS
+SELECT 
+    * 
+FROM 
+    staging.priority_flat_view
 WHERE job_title_short = 'Senior Data Engineer';
+
+
+SELECT 
+    job_title_short, COUNT(*) AS jobs_count 
+FROM 
+    senior_job__post_flat
+GROUP BY job_title_short
+ORDER BY jobs_count DESC;
