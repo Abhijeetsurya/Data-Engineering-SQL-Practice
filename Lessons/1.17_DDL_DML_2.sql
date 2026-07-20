@@ -1,6 +1,8 @@
 /* Cleaned and formatted query */
-USE data_jobs;
+USE jobs_mart;
 
+ 
+CREATE TABLE staging.job_postings_flat AS
 SELECT
     jpf.job_id,
     jpf.job_title_short,
@@ -22,7 +24,10 @@ SELECT
     cd.link AS company_link,
     cd.link_google,
     cd.thumbnail
-FROM job_postings_fact AS jpf
-LEFT JOIN company_dim AS cd
-    ON jpf.company_id = cd.company_id
+FROM data_jobs.main.job_postings_fact AS jpf
+LEFT JOIN data_jobs.main.company_dim AS cd
+    ON jpf.company_id = cd.company_id;
+
+
+SELECT * FROM staging.job_postings_flat
 LIMIT 10;
