@@ -135,7 +135,7 @@ WHERE salary < 25000;
 
 -- Q126 Delete projects that have already ended.
 DELETE FROM projects
-WHERE end_date < TODAY();
+WHERE end_date < CURRENT_DATE();
 
 
 -- Q127 Delete departments that have no location assigned.
@@ -149,12 +149,13 @@ ALTER TABLE employees ADD COLUMN email VARCHAR(150);
 
 -- Q129 Rename the column salary to monthly_salary.
 
-ALTER TABLE employees RENAME COLUMN salary TO monnthly_salary;
+ALTER TABLE employees RENAME COLUMN salary TO monthly_salary;
 
 -- Q130 Drop the column is_active.
 
 ALTER TABLE employees DROP COLUMN is_active;
 
 
-
+-- Q131. Drop the projects table.
+DROP TABLE projects;
 
