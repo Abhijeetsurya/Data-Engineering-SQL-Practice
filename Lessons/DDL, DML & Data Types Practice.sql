@@ -68,9 +68,9 @@ TIMESTAMP     - store time */
 
 /* Q116 Which data type would you choose for:
 
-Aadhaar Number - INTERGER(14) becuase addhar card have fix 14 length numbers
+Aadhaar Number - CHAR(12) becuase addhar card have fix 12 length numbers
 Mobile Number  - CHAR(10) because mobile number in india have 10 digit if we add this in INTEGER it take to much memory
-Product Price  - FLOAT becuase having decimal value
+Product Price  - NUMERIC becuase having decimal value
 Email Address  - VARCHAR becuase email have combination of text and number and special character @ also every email have different length
 Login Time     - TIMESTAMP/DATETIME becuase login time contain time and date 
 Percentage     - FLOAT because percentage have decimal value
@@ -113,7 +113,7 @@ SET salary = salary*1.10;
 -- Q122 Deactivate employees hired before 2020-01-01.
 UPDATE employees
 SET is_active = FALSE 
-WHERE hire_date > '2020-01-01';
+WHERE hire_date < '2020-01-01';
 
 
 -- Q123 Change the department location from "Delhi" to "Noida".
@@ -140,7 +140,7 @@ WHERE end_date < TODAY();
 
 -- Q127 Delete departments that have no location assigned.
 DELETE FROM department
-WHERE location = NULL;
+WHERE location IS NULL;
 
 
 -- Q128 Add a column: email VARCHAR(150) to the employees table.
