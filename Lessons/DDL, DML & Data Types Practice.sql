@@ -235,14 +235,14 @@ INSERT INTO products VALUES(30001, 'Titan Watch', 2400, 980),
 (60809, 'ZARA T-shirt', 1200, 2300);
 
 -- Q139 Insert three orders referencing existing customers.
-INSERT INTO orders(order_id, cusotmer_id, order_date, total_amount)VALUES
+INSERT INTO orders(order_id, customer_id, order_date, total_amount)VALUES
 (501, 10001, CURRENT_DATE, 55000), 
     (502, 10002, current_date, 67000), 
     (503, 10003, CURRENT_DATE, 60000);
 
 
 -- Q140 Insert one product without specifying stock. What value will it get?
-INSERT INTO products(product_id, products_name, price) VALUES
+INSERT INTO products(product_id, product_name, price) VALUES
 (60013, 'PUMA Shoes', 5600);
 
 
@@ -254,7 +254,7 @@ SET price = price*1.15;
 -- Q142 Reduce stock by 1 for every product priced above 1000.
 UPDATE products
 SET stock = stock -1
-WHERE price > 1000;
+WHERE price > 1000 AND stock > 0;
 
 -- Q143 Update the email of customer ID 2.
 
@@ -263,7 +263,7 @@ SET email = 'nehagour1@gmail.com'
 WHERE customer_id = 10002;
 
 
--- Q144 Increase the order amount by ₹500 for all orders placed before 2027-01-01.
+-- Q144 Increase the order amount by ₹500 for all orders placed before 2026-01-01.
 UPDATE orders
 SET total_amount = total_amount+500
 WHERE order_date < '2026-01-01';
@@ -275,7 +275,7 @@ DELETE FROM customers
 WHERE NOT EXISTS (
     SELECT 1 
     FROM orders 
-    WHERE orders.cusotmer_id = customers.customer_id
+    WHERE orders.customer_id = customers.customer_id
 );
 
 
@@ -292,7 +292,7 @@ WHERE total_amount < 100;
 
 -- Q148 Add a column: status VARCHAR(20) DEFAULT 'Pending' to the orders table.
 
-ALTER TABLE orders ADD COLUMN status VARCHAR(20) DEFAULT('Pending');
+ALTER TABLE orders ADD COLUMN status VARCHAR(20) DEFAULT 'Pending';
 
 
 -- Q149 Rename phone to mobile_number in the customers table.
