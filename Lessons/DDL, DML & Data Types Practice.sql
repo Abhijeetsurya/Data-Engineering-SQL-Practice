@@ -159,3 +159,158 @@ ALTER TABLE employees DROP COLUMN is_active;
 -- Q131. Drop the projects table.
 DROP TABLE projects;
 
+/* Q132 Create a table customers with:
+
+customer_id (Primary Key)
+first_name (VARCHAR(50), NOT NULL)
+last_name (VARCHAR(50))
+email (UNIQUE)
+phone (UNIQUE)
+created_at (TIMESTAMP) */
+
+CREATE TABLE customers(
+customer_id INT PRIMARY KEY,
+first_name VARCHAR(50) NOT NULL,
+last_name VARCHAR(50),
+email VARCHAR(50) UNIQUE,
+phone CHAR(10) UNIQUE,
+created_at TIMESTAMP
+);   
+
+/* Q133 Create an orders table with:
+
+order_id (Primary Key)
+customer_id (Foreign Key referencing customers)
+order_date (DATE)
+total_amount (NUMERIC(10,2) CHECK > 0) */
+CREATE TABLE orders(
+order_id INT PRIMARY KEY,
+customer_id INT REFERENCES customers(customer_id),
+order_date DATE,
+total_amount NUMERIC(10, 2) CHECK(total_amount > 0)
+);  
+
+
+/* Q134 Create a products table with:
+
+product_id (Primary Key)
+product_name (VARCHAR(100), NOT NULL)
+price (NUMERIC(8,2), CHECK price > 0)
+stock (INTEGER, DEFAULT 0) */
+
+CREATE TABLE products(
+product_id INT PRIMARY KEY,
+product_name VARCHAR(100) NOT NULL,
+price NUMERIC(8, 2) CHECK(price > 0),
+stock INTEGER DEFAULT(0)
+); 
+
+
+-- Q135 Why should email usually have a UNIQUE constraint?
+-- Because every customer have unquie email id
+
+
+/* Q136 What is the difference between:
+
+PRIMARY KEY  - Uses for make coloumn NOT NULL and UNIQUE
+UNIQUE       - It may be NULL but only storing UNQIUE
+NOT NULL     - must need to add data in this column
+CHECK        - Add condition in column 
+DEFAULT      - Set default in column
+FOREIGN KEY  - connect with other table
+
+Give one practical example of each. */
+
+
+-- Q137 Insert three customers.
+INSERT INTO customers VALUES(10001, 'Riya', 'Kushwaha', 'riya@gmail.com', '9876987490', NOW()),
+(10002, 'Neha', 'Gour', 'nehagour@gmail.com', '6276457636', NOW()),
+(10003, 'Abhi', 'Surya', 'abhi@gmail.com', '9303940996', NOW());
+
+
+-- Q138 Insert four products.
+INSERT INTO products VALUES(30001, 'Titan Watch', 2400, 980),
+(70012, 'Gucci Bag', 55000, 145),
+(90101, 'Nike Shoes', 12000, 569),
+(60809, 'ZARA T-shirt', 1200, 2300);
+
+-- Q139 Insert three orders referencing existing customers.
+INSERT INTO orders(order_id, cusotmer_id, order_date, total_amount)VALUES
+(501, 10001, CURRENT_DATE, 55000), 
+    (502, 10002, current_date, 67000), 
+    (503, 10003, CURRENT_DATE, 60000);
+
+
+-- Q140 Insert one product without specifying stock. What value will it get?
+INSERT INTO products(product_id, products_name, price) VALUES
+(60013, 'PUMA Shoes', 5600);
+
+
+-- Q141 Increase the price of every product by 15%.
+
+UPDATE products
+SET price = price*1.15;
+
+-- Q142 Reduce stock by 1 for every product priced above 1000.
+UPDATE products
+SET stock = stock -1
+WHERE price > 1000;
+
+-- Q143 Update the email of customer ID 2.
+
+UPDATE customers
+SET email = 'nehagour1@gmail.com'
+WHERE customer_id = 10002;
+
+
+-- Q144 Increase the order amount by ₹500 for all orders placed before 2027-01-01.
+UPDATE orders
+SET total_amount = total_amount+500
+WHERE order_date < '2026-01-01';
+
+
+-- Q145 Delete customers who have never placed an order.
+
+DELETE FROM customers
+WHERE NOT EXISTS (
+    SELECT 1 
+    FROM orders 
+    WHERE orders.cusotmer_id = customers.customer_id
+);
+
+
+
+-- Q146 Delete products with stock equal to 0.
+DELETE FROM products
+WHERE stock = 0;
+
+
+-- Q147 Delete orders whose total amount is below ₹100.
+DELETE FROM orders
+WHERE total_amount < 100;
+
+
+-- Q148 Add a column: status VARCHAR(20) DEFAULT 'Pending' to the orders table.
+
+ALTER TABLE orders ADD COLUMN status VARCHAR(20) DEFAULT('Pending');
+
+
+-- Q149 Rename phone to mobile_number in the customers table.
+
+ALTER TABLE customers RENAME COLUMN phone TO mobile_number;
+
+
+-- Q150 Drop the created_at column from the customers table.
+
+ALTER TABLE customers DROP COLUMN created_at;
+
+
+/* Q151 Suppose you're designing an Employee Management System.
+
+List at least five tables you would create and explain in one sentence why each table is needed. */
+/* employee_details for add details of employee(employee_id, department_id, Name, emaial, phone, joining_date) 
+      relation with department table, job role table, location table using employeeid  */
+/* department for add details (department_name, department_id) in which department employee working relation with employee_details table*/
+-- job roles for job title, salary, (employee_id, department_id, job_title, salary) relation with employee details and department table using employee_id
+-- location for full address(street, city, state, country, pin code) - employee_id, name, department, location rrelation with employee details table using employee_id
+-- 
