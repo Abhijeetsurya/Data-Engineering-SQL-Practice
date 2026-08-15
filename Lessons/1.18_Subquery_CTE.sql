@@ -76,3 +76,23 @@ WITH valid_salaries AS (SELECT
     LIMIT 10;
 
 
+-- CTE
+WITH title_median AS(
+    SELECT 
+        job_title_short,
+        job_work_from_home,
+        MEDIAN(salary_year_avg) AS median_salary
+    FROM
+        job_postings_fact
+    WHERE job_country = 'India'
+    GROUP BY job_title_short, job_work_from_home
+)
+
+SELECT 
+    r.job_title_short,
+    r.median_salary AS remorte_median_salary, 
+    o.median_salary AS onsite_median_salary
+FROM 
+    title_median AS r
+INNER JOIN title_median AS o ON r.job_title_short = o.job_title_short
+WHERE r.job_work_from_home = TRUE OR o.job_work_from_home = FALSE;
