@@ -91,8 +91,57 @@ WITH title_median AS(
 SELECT 
     r.job_title_short,
     r.median_salary AS remorte_median_salary, 
-    o.median_salary AS onsite_median_salary
+    o.median_salary AS onsite_median_salary,
+    (r.median_salary - o.median_salary) AS remote_premium
 FROM 
     title_median AS r
 INNER JOIN title_median AS o ON r.job_title_short = o.job_title_short
-WHERE r.job_work_from_home = TRUE OR o.job_work_from_home = FALSE;
+WHERE r.job_work_from_home = TRUE OR o.job_work_from_home = FALSE
+ORDER BY remote_premium DESC;
+
+
+
+
+
+SELECT * FROM range(3) AS src(key);
+
+SELECT * FROM range(2) AS tgt(key);
+
+
+-- EXISTS IN BOTH TABLE
+SELECT 
+    *
+FROM 
+    range(3) AS src(key)
+WHERE EXISTS (
+        SELECT 1 
+        FROM range(2) AS tgt(key)
+        WHERE tgt.key = src.key);
+
+-- NOT EXISTS IN ONE TABLE
+
+SELECT 
+    *
+FROM 
+    range(3) AS src(key)
+WHERE NOT EXISTS (
+        SELECT 1 
+        FROM range(2) AS tgt(key)
+        WHERE tgt.key = src.key);
+
+
+-- Final Example
+-- Identify job postings that have no associated skills before loading them into a data_mart
+
+SELECT * FROM job_postings_fact
+LIMIT 10;
+
+SELECT * FROM skills_job_dim
+LIMIT 10;
+
+SELECT * FROM job_postings_fact AS tgt
+WHERE NOT EXISTS (
+    SELECT * FROM skills_job_dim AS src 
+    WHERE tgt.job_id = src.job_id
+)
+ORDER BY job_id;
