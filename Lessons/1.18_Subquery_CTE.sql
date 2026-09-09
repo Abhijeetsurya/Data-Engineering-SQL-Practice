@@ -86,9 +86,48 @@ LIMIT 10;
     SELECT 
         r.job_title_short,
         r.median_salary AS remote_median_salary,
-        o.median_salary AS onsite_median_salary
+        o.median_salary AS onsite_median_salary,
+        (r.median_salary - o.median_salary) AS remote_premium
     FROM title_medians AS r
     INNER JOIN title_medians AS o
-        r.job_title_short = o.job_title_short
-    WHERE r.job_work_from_home = TRUE;
+        ON r.job_title_short = o.job_title_short
+    WHERE r.job_work_from_home = TRUE AND o.job_work_from_home = FALSE
+    ORDER BY remote_premium DESC;
 
+
+
+
+
+SELECT * FROM range(10) AS scr(key);
+
+SELECT * FROM range(2) AS tgt(key);
+
+SELECT *
+FROM range(10) AS scr(key)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM range(2) AS tgt(key)
+    WHERE scr.key = tgt.key
+);
+
+
+
+SELECT *
+FROM job_postings_fact
+ORDER BY job_id
+LIMIT 10;
+
+
+SELECT * FROM skills_job_dim
+ORDER BY job_id
+LIMIT 10;
+
+
+
+SELECT *
+FROM job_postings_fact
+WHERE NOT EXISTS (
+    SELECT * FROM skills_job_dim
+    WHERE job_postings_fact.job_id = skills_job_dim.job_id
+)
+ORDER BY job_id;
