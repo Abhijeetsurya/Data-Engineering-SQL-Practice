@@ -11,6 +11,5 @@ VALUES
     (2, 'Senior Data Engineer', 1),
     (3, 'Software Engineer', 3);
 
-
 SELECT * FROM staging.priority_roles;
 
