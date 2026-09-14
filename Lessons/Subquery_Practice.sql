@@ -52,4 +52,20 @@ GROUP BY jpf.job_country
 HAVING AVG(jpf.salary_year_avg) > (SELECT AVG(salary_year_avg) FROM job_postings_fact WHERE job_title_short = 'Data Engineer');
 
 
-DESCRIBE job_postings_fact;
+--- Q133. Find all Data Engineer jobs whose salary is equal to the highest Data Engineer salary.
+
+SELECT * FROM job_postings_fact AS jpf
+WHERE jpf.job_title_short = 'Data Engineer'
+AND jpf.salary_year_avg == (SELECT MAX(salary_year_avg) FROM job_postings_fact WHERE job_title_short = 'Data Engineer');
+
+
+-- Q134. Find the companies that have posted a Data Engineer job with a salary above the average Data Engineer salary.
+
+SELECT cd.name AS company_name FROM job_postings_fact AS jpf
+JOIN company_dim AS cd ON jpf.company_id = cd.company_id
+WHERE jpf.job_title_short = 'Data Engineer'
+AND jpf.salary_year_avg > (SELECT AVG(salary_year_avg) FROM job_postings_fact WHERE job_title_short = 'Data Engineer');
+
+
+
+-- Q135
