@@ -1,60 +1,6 @@
-CREATE SCHEMA IF NOT EXISTS data_jobs;
-CREATE SCHEMA IF NOT EXISTS staging;
-CREATE SCHEMA IF NOT EXISTS main;
+--- Create TEMP table
 
-CREATE OR REPLACE TABLE data_jobs.company_dim (
-    company_id INTEGER PRIMARY KEY,
-    name VARCHAR
-);
-
-CREATE OR REPLACE TABLE data_jobs.job_postings_fact (
-    job_id INTEGER PRIMARY KEY,
-    job_title_short VARCHAR,
-    company_id INTEGER,
-    job_posted_date TIMESTAMP,
-    salary_year_avg DOUBLE
-);
-
-CREATE OR REPLACE TABLE staging.priority_roles (
-    role_id INTEGER PRIMARY KEY,
-    role_name VARCHAR(255),
-    priority_level INTEGER
-);
-
-INSERT INTO data_jobs.company_dim (company_id, name)
-VALUES
-    (1, 'Meta'),
-    (2, 'Google'),
-    (3, 'Amazon');
-
-INSERT INTO data_jobs.job_postings_fact (job_id, job_title_short, company_id, job_posted_date, salary_year_avg)
-VALUES
-    (101, 'Data Engineer', 1, '2024-01-10 00:00:00', 180000),
-    (102, 'Senior Data Engineer', 2, '2024-02-12 00:00:00', 210000),
-    (103, 'Software Engineer', 3, '2024-03-15 00:00:00', 175000),
-    (104, 'Data Engineer', 3, '2024-04-20 00:00:00', 185000);
-
-INSERT INTO staging.priority_roles (role_id, role_name, priority_level)
-VALUES
-    (1, 'Data Engineer', 1),
-    (2, 'Senior Data Engineer', 1),
-    (3, 'Software Engineer', 3)
-ON CONFLICT (role_id) DO UPDATE SET
-    role_name = EXCLUDED.role_name,
-    priority_level = EXCLUDED.priority_level;
-
-CREATE OR REPLACE TABLE main.priority_jobs_snapshot (
-    job_id INTEGER PRIMARY KEY,
-    job_title_short VARCHAR,
-    company_name VARCHAR,
-    job_posted_date TIMESTAMP,
-    salary_year_avg DOUBLE,
-    priority_lvl INTEGER,
-    updated_at TIMESTAMP
-);
-
--- ----------------   Create TEMP Table
-CREATE OR REPLACE TEMP TABLE src_priority_jobs AS 
+CREATE OR REPLACE TEMP TABLE src_priority_jobs AS
 SELECT
     jpf.job_id,
     jpf.job_title_short,
@@ -68,7 +14,10 @@ LEFT JOIN data_jobs.company_dim cd ON jpf.company_id = cd.company_id
 INNER JOIN staging.priority_roles AS r
     ON jpf.job_title_short = r.role_name;
 
------------------------ UPDATE Statement
+
+
+-- UPDATE statement
+
 UPDATE main.priority_jobs_snapshot AS tgt
 SET
     priority_lvl = src.priority_level,
@@ -76,6 +25,8 @@ SET
 FROM src_priority_jobs AS src
 WHERE tgt.job_id = src.job_id
 AND tgt.priority_lvl IS DISTINCT FROM src.priority_level;
+
+
 
 SELECT 
     job_title_short,
@@ -86,7 +37,8 @@ FROM main.priority_jobs_snapshot
 GROUP BY job_title_short
 ORDER BY job_count DESC;
 
------ INSERT Statement
+
+-- INSERT Statement
 INSERT INTO main.priority_jobs_snapshot(
     job_id,
     job_title_short,
@@ -96,7 +48,7 @@ INSERT INTO main.priority_jobs_snapshot(
     priority_lvl,
     updated_at
 )
-SELECT 
+SELECT
     src.job_id,
     src.job_title_short,
     src.company_name,
@@ -104,26 +56,14 @@ SELECT
     src.salary_year_avg,
     src.priority_level,
     src.updated_at
-FROM src_priority_jobs src
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM main.priority_jobs_snapshot tgt
-    WHERE tgt.job_id = src.job_id
-);
+FROM src_priority_jobs AS src;
 
---- DELETE Statement
+
+-- DELETE Statement
+
 DELETE FROM main.priority_jobs_snapshot AS tgt
 WHERE NOT EXISTS (
     SELECT 1
     FROM src_priority_jobs AS src
-    WHERE src.job_id = tgt.job_id
+    WHERE tgt.job_id = src.job_id
 );
-
-SELECT 
-    job_title_short,
-    COUNT(*) AS job_count,
-    MIN(priority_lvl) AS priority_lvl,
-    MIN(updated_at) AS updated_at
-FROM main.priority_jobs_snapshot
-GROUP BY job_title_short
-ORDER BY job_count DESC;
