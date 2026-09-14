@@ -18,15 +18,80 @@ INNER JOIN staging.priority_roles AS r
 
 -- UPDATE statement
 
-UPDATE main.priority_jobs_snapshot AS tgt
-SET
-    priority_lvl = src.priority_level,
-    updated_at = src.updated_at
-FROM src_priority_jobs AS src
-WHERE tgt.job_id = src.job_id
-AND tgt.priority_lvl IS DISTINCT FROM src.priority_level;
+-- UPDATE main.priority_jobs_snapshot AS tgt
+-- SET
+--     priority_lvl = src.priority_level,
+--     updated_at = src.updated_at
+-- FROM src_priority_jobs AS src
+-- WHERE tgt.job_id = src.job_id
+-- AND tgt.priority_lvl IS DISTINCT FROM src.priority_level;
 
 
+
+
+
+-- -- INSERT Statement
+-- INSERT INTO main.priority_jobs_snapshot(
+--     job_id,
+--     job_title_short,
+--     company_name,
+--     job_posted_date,
+--     salary_year_avg,
+--     priority_lvl,
+--     updated_at
+-- )
+-- SELECT
+--     src.job_id,
+--     src.job_title_short,
+--     src.company_name,
+--     src.job_posted_date,
+--     src.salary_year_avg,
+--     src.priority_level,
+--     src.updated_at
+-- FROM src_priority_jobs AS src;
+
+
+-- -- DELETE Statement
+
+-- DELETE FROM main.priority_jobs_snapshot AS tgt
+-- WHERE NOT EXISTS (
+--     SELECT 1
+--     FROM src_priority_jobs AS src
+--     WHERE tgt.job_id = src.job_id
+-- );
+
+
+
+-- MERGE INTO
+
+MERGE INTO main.priority_jobs_snapshot AS tgt
+USING src_priority_jobs AS src
+ON tgt.job_id = src.job_id
+WHEN MATCHED AND tgt.priority_lvl IS DISTINCT FROM src.priority_level THEN
+    UPDATE SET
+        priority_lvl = src.priority_level,
+        updated_at = src.updated_at
+WHEN NOT MATCHED THEN
+    INSERT (
+        job_id,
+        job_title_short,
+        company_name,
+        job_posted_date,
+        salary_year_avg,
+        priority_lvl,
+        updated_at
+    )
+    VALUES (
+        src.job_id,
+        src.job_title_short,
+        src.company_name,
+        src.job_posted_date,
+        src.salary_year_avg,
+        src.priority_level,
+        src.updated_at
+    )
+WHEN NOT MATCHED BY SOURCE THEN
+    DELETE;
 
 SELECT 
     job_title_short,
@@ -36,34 +101,3 @@ SELECT
 FROM main.priority_jobs_snapshot
 GROUP BY job_title_short
 ORDER BY job_count DESC;
-
-
--- INSERT Statement
-INSERT INTO main.priority_jobs_snapshot(
-    job_id,
-    job_title_short,
-    company_name,
-    job_posted_date,
-    salary_year_avg,
-    priority_lvl,
-    updated_at
-)
-SELECT
-    src.job_id,
-    src.job_title_short,
-    src.company_name,
-    src.job_posted_date,
-    src.salary_year_avg,
-    src.priority_level,
-    src.updated_at
-FROM src_priority_jobs AS src;
-
-
--- DELETE Statement
-
-DELETE FROM main.priority_jobs_snapshot AS tgt
-WHERE NOT EXISTS (
-    SELECT 1
-    FROM src_priority_jobs AS src
-    WHERE tgt.job_id = src.job_id
-);
