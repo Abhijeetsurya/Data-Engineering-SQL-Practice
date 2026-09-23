@@ -53,3 +53,13 @@ GROUP BY
     DATE_TRUNC('month', job_posted_date)
 ORDER BY
     job_posted_month;
+
+
+SELECT  
+    '2026-01-01 00:00:00+00'::TIMESTAMPTZ;
+
+SELECT 
+    job_posted_date
+FROM 
+    job_postings_fact
+LIMIT 10;
