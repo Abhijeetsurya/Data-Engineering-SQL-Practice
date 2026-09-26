@@ -156,7 +156,7 @@ SELECT
     CASE
         WHEN job_schedule_type = 'Full-Time' THEN 'Full Time'
         WHEN job_schedule_type = 'Part-Time' THEN 'Part Time'
-        WHEN job_schedule_type = 'Contract' THEN 'contact'
+        WHEN job_schedule_type = 'Contract' THEN 'contract'
         ELSE 'Other'
     END AS job_schedule_category
 FROM job_postings_fact;
@@ -172,9 +172,9 @@ Create salary ranges:
 SELECT
     salary_year_avg,
     CASE 
-        WHEN salary_year_avg BETWEEN 0 AND 50000 THEN '0-50K'
-        WHEN salary_year_avg BETWEEN 50000 AND 100000 THEN '50K-100K'
-        WHEN salary_year_avg BETWEEN 100000 AND 150000 THEN '100K-150K'
+        WHEN salary_year_avg < 50000 THEN '0-50K'
+        WHEN salary_year_avg < 100000 THEN '50K-100K'
+        WHEN salary_year_avg < 150000 THEN '100K-150K'
         ELSE '150K+'
     END AS Salary_range
 FROM
@@ -189,16 +189,14 @@ Create a salary data-quality status:
 - Missing → salary IS NULL */
 
 SELECT 
-    salary_year_avg, salary_hour_avg,
+    salary_year_avg,
     CASE
-        WHEN salary_year_avg > 0 OR salary_hour_avg > 0 THEN 'Valid'
-        WHEN salary_year_avg <= 0 AND salary_hour_avg <= 0 THEN 'Invalid'
-        WHEN salary_year_avg IS NULL OR salary_hour_avg IS NULL THEN 'Missing'
+        WHEN salary_year_avg > 0 THEN 'Valid'
+        WHEN salary_year_avg <= 0 THEN 'Invalid'
+        WHEN salary_year_avg IS NULL THEN 'Missing'
     END AS salary_data_quality_status
 FROM
-    job_postings_fact
-WHERE salary_year_avg IS NOT NULL OR salary_hour_avg IS NOT NULL;
-
+    job_postings_fact;
 
 
 /* Q150
@@ -209,15 +207,16 @@ Classify:
 - Machine Learning Engineer → ML Engineering
 - Everything else → Other */
 
-SELECT 
-    job_title,
+SELECT
+    job_title_short,
     CASE
-        WHEN job_title LIKE '%Data%' AND job_title LIKE '%Engineer%' THEN 'Engineering'
-        WHEN job_title LIKE '%Data%' AND job_title LIKE '%Scientist%' THEN 'Data Science'
-        WHEN job_title LIKE '%Data%' AND job_title LIKE '%Analyst%' THEN 'Analytics'
-        WHEN job_title LIKE '%Machine%' AND job_title LIKE  '%Learning%' OR job_title LIKE '%Engineer%' THEN 'ML Engineering'
-        ELSE 'Other'
-    END AS job_classification
+        WHEN job_title_short = 'Data Engineer' THEN 'Engineering'
+        WHEN job_title_short = 'Data Scientist' THEN 'Data Science'
+        WHEN job_title_short = 'Data Analyst' THEN 'Analytics'
+        WHEN job_title_short = 'Machine Learning Engineer' THEN 'ML Engineer'
+        ELSE 'other'
+    END AS job_type
 FROM
-    job_postings_fact
-GROUP BY job_title;
+    job_postings_fact;
+
+
