@@ -199,24 +199,4 @@ FROM
     job_postings_fact;
 
 
-/* Q150
-Classify:
-- Data Engineer → Engineering
-- Data Scientist → Data Science
-- Data Analyst → Analytics
-- Machine Learning Engineer → ML Engineering
-- Everything else → Other */
-
-SELECT
-    job_title_short,
-    CASE
-        WHEN job_title_short = 'Data Engineer' THEN 'Engineering'
-        WHEN job_title_short = 'Data Scientist' THEN 'Data Science'
-        WHEN job_title_short = 'Data Analyst' THEN 'Analytics'
-        WHEN job_title_short = 'Machine Learning Engineer' THEN 'ML Engineer'
-        ELSE 'other'
-    END AS job_type
-FROM
-    job_postings_fact;
-
 
