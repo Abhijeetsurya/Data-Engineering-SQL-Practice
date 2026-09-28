@@ -62,7 +62,8 @@ SELECT
     job_title,
     dayname(job_posted_date) AS job_posted_day
 FROM 
-    job_postings_fact;
+    job_postings_fact
+WHERE job_posted_day = 'Saturday' OR job_posted_day = 'Sunday';
 
 /* Q167 — Monthly Data Engineer Analysis
 Find the number of Data Engineer jobs posted in each month.*/
@@ -73,6 +74,7 @@ SELECT
     COUNT(job_id) AS total_jobs
 FROM
     job_postings_fact
+WHERE job_title_short = 'Data Engineer'
 GROUP BY job_post_month;
 
 
@@ -197,7 +199,7 @@ SELECT
 FROM
     job_postings_fact
 WHERE job_title_short = 'Data Analyst'
-UNION
+INTERSECT
 SELECT
     company_id
 FROM
