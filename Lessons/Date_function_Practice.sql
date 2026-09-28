@@ -202,8 +202,7 @@ SELECT
     company_id
 FROM
     job_postings_fact
-WHERE job_title_short = 'Data Engineer'
-GROUP BY company_id;
+WHERE job_title_short = 'Data Engineer';
 
 
 /* Q177 — Data Engineer Only Companies
@@ -281,15 +280,20 @@ GROUP BY  sjd.skill_id, sd.skills;
 /* Q180 — 🔥 Final Challenge
 Find companies that have posted both Data Engineer and Data Scientist jobs, but not Data Analyst jobs. */
 
-SELECT
-    company_id
-FROM
-    job_postings_fact
-WHERE 
-    job_title_short = 'Data Engineer' AND job_title_short = 'Data Scientist'
+(
+    SELECT company_id
+    FROM job_postings_fact
+    WHERE job_title_short = 'Data Engineer'
+
+    INTERSECT
+
+    SELECT company_id
+    FROM job_postings_fact
+    WHERE job_title_short = 'Data Scientist'
+)
+
 EXCEPT
-SELECT
-    company_id
-FROM
-    job_postings_fact
-WHERE job_title_short = 'Data Engineer' AND job_title_short = 'Data Scientist' AND job_title_short = 'Data Analyst';
+
+SELECT company_id
+FROM job_postings_fact
+WHERE job_title_short = 'Data Analyst';
