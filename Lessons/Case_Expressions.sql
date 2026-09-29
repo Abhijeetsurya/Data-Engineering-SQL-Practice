@@ -82,6 +82,7 @@ GROUP BY job_title_short;
     -- < 75k 'Low'
     -- 75k - 150k 'Medium'
     -- >= 150k 'High'
+    
 WITH salaries AS (
     SELECT 
         job_title_short,
