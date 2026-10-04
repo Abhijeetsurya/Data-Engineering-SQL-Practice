@@ -55,3 +55,24 @@ SELECT
 FROM title_lower
 ORDER BY RANDOM()
 LIMIT 30;
+
+
+-- POSITION
+
+SELECT POSITION('cat' IN 'the copycat matches');
+
+-- STRPOS
+
+SELECT STRPOS('the copycat matches', 'cat');
+
+
+-- SPLIT_PART
+
+SELECT SPLIT_PART('abhisurya1421@gmail.com', '@', 2);
+
+SELECT SPLIT_PART('abhi.surya.1421@gmail.com', '.', 3);
+
+
+-- CONCAT_WS
+
+SELECT CONCAT_WS(', ', 'Abhijeet', NULL, '24', 'Janury');
