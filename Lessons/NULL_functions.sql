@@ -51,11 +51,11 @@ Sort by salary_year_avg descending. */
 
 SELECT
     job_id,
-    job_title,
+    job_title_short,
     salary_year_avg
 FROM
     job_postings_fact
-WHERE job_title = 'Data Engineer' AND salary_year_avg IS NOT NULL
+WHERE job_title_short = 'Data Engineer' AND salary_year_avg IS NOT NULL
 ORDER BY salary_year_avg DESC;
 
 
@@ -67,13 +67,11 @@ Find:
 Return all three values in one row. */
 
 SELECT
-    YEAR(job_posted_date) AS Year,
     COUNT(job_id) AS total,
     COUNT(CASE WHEN salary_year_avg IS NOT NULL THEN job_id END) AS salary_year_avg_present,
     COUNT(CASE WHEN salary_year_avg IS NULL THEN job_id END) AS salary_year_avg_not_present
 FROM
-    job_postings_fact
-GROUP BY YEAR(job_posted_date);
+    job_postings_fact;
 
 
 
@@ -149,9 +147,7 @@ Return:
 SELECT
     job_id,
     salary_year_avg,
-    CASE
-        WHEN COALESCE(salary_year_avg, 0) IS NOT NULL THEN salary_year_avg/12
-    END AS monthly_salary
+    COALESCE(salary_year_avg, 0)/12 AS monthly_salary
 FROM 
     job_postings_fact;
 
