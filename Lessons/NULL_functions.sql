@@ -160,14 +160,13 @@ Return:
 - job_id
 - salary_year_avg  */
 
-
 SELECT
     job_id,
     salary_year_avg
     
 FROM
     job_postings_fact
-WHERE salary_year_avg = NULLIF(salary_year_avg, 0);
+WHERE NULLIF(salary_year_avg, 0) IS NOT NULL;
 
 
 

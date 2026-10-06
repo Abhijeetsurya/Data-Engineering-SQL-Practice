@@ -76,3 +76,6 @@ SELECT SPLIT_PART('abhi.surya.1421@gmail.com', '.', 3);
 -- CONCAT_WS
 
 SELECT CONCAT_WS(', ', 'Abhijeet', NULL, '24', 'Janury');
+
+
+
