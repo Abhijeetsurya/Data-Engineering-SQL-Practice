@@ -103,3 +103,17 @@ SELECT
     ) AS salary_dense_rank
 FROM
     job_postings_fact;
+
+/* Q224 — Ranking Within Categories
+Assign a salary rank to every job within its own job_title_short category, from highest to lowest yearly salary.*/
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    RANK() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS category_salary_rank
+FROM
+    job_postings_fact;
