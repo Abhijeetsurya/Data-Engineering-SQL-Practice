@@ -34,8 +34,7 @@ SELECT
         PARTITION BY job_id
     ) AS avg_yearly_salary
 FROM
-    job_postings_fact
-WHERE salary_year_avg IS NOT NULL;
+    job_postings_fact;
 
 
 /* Q219 — AVG() OVER(PARTITION BY)
@@ -115,5 +114,37 @@ SELECT
         PARTITION BY job_title_short
         ORDER BY salary_year_avg DESC
     ) AS category_salary_rank
+FROM
+    job_postings_fact
+WHERE salary_year_avg IS NOT NULL;
+
+
+/* Q225 — Top-Paying Jobs 🔥
+Find the top three highest-paid jobs within each job_title_short category.*/
+
+SELECT
+    job_id,
+    job_title,
+    job_title_short,
+    salary_year_avg,
+    RANK() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg
+    ) AS salary_rank
+FROM 
+    job_postings_fact
+WHERE salary_year_avg IS NOT NULL
+QUALIFY salary_rank >= 3;
+
+
+/* Q226 — Running Total
+Calculate a running total of job postings ordered by job_posted_date, from oldest to newest.*/
+
+SELECT 
+    job_id,
+    DATE(job_posted_date) AS job_posted_date,
+    COUNT(job_id) OVER(
+        PARTITION BY DATE(job_posted_date)
+    ) AS running_job_count
 FROM
     job_postings_fact;
