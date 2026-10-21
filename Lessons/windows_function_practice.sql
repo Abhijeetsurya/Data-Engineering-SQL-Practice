@@ -259,3 +259,24 @@ FROM
     job_postings_fact
 WHERE 
     salary_year_avg IS NOT NULL;
+
+
+/* Q235:- Find the top three jobs per category
+
+Return up to three postings per job_title_short category, ordered from highest to lowest annual salary. 
+Exclude missing annual salaries.*/
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    RANK() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS rank_by_title
+FROM
+    job_postings_fact
+WHERE 
+    salary_year_avg IS NOT NULL
+QUALIFY rank_by_title <= 3;
+
