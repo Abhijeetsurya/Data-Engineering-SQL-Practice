@@ -258,7 +258,8 @@ SELECT
 FROM
     job_postings_fact
 WHERE 
-    salary_year_avg IS NOT NULL;
+    salary_year_avg IS NOT NULL
+QUALIFY row_number_by_title = 1;
 
 
 /* Q235:- Find the top three jobs per category
@@ -280,3 +281,18 @@ WHERE
     salary_year_avg IS NOT NULL
 QUALIFY rank_by_title <= 3;
 
+/* Q236:-
+Understand ties
+Rank postings within each job_title_short category using ROW_NUMBER(), ordering by salary_year_avg 
+DESC NULLS LAST. Explain what could happen if two postings have the same salary and how you could make their ordering deterministic.*/
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    ROW_NUMBER() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC NULLS LAST
+    ) AS row_number_by_title
+FROM
+    job_postings_fact;
