@@ -270,3 +270,31 @@ LIMIT 60;
 
 
 
+-- Count Rows - aggregation Only
+SELECT
+    COUNT(*)
+FROM
+    job_postings_fact;
+
+-- Count Rows - Window funtion
+SELECT
+    job_id,
+    COUNT(*) OVER()
+FROM
+    job_postings_fact;
+
+-- Hourly Salary by Job Title
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_hour_avg,
+    company_id,
+    AVG(salary_hour_avg) OVER(
+        PARTITION BY job_title_short, company_id
+    ) AS avg_hourly_salary_by_title
+FROM
+    job_postings_fact
+WHERE salary_hour_avg IS NOT NULL
+ORDER BY RANDOM()
+LIMIT 10;
