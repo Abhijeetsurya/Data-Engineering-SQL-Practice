@@ -298,3 +298,34 @@ FROM
 WHERE salary_hour_avg IS NOT NULL
 ORDER BY RANDOM()
 LIMIT 10;
+
+
+
+-- Rank Salary by job_title_short
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_hour_avg,
+    RANK() OVER(
+        ORDER BY salary_hour_avg DESC
+    ) AS rank_salary
+FROM
+    job_postings_fact
+WHERE salary_hour_avg IS NOT NULL;
+
+-- running average salary by job_title_short
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_hour_avg,
+    AVG(salary_hour_avg) OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_hour_avg DESC
+    ) AS avg_salary_by_title
+FROM
+    job_postings_fact
+WHERE salary_hour_avg IS NOT NULL
+ORDER BY job_title_short, job_posted_date
+LIMIT 10;
