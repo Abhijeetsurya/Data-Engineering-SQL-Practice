@@ -296,3 +296,66 @@ SELECT
     ) AS row_number_by_title
 FROM
     job_postings_fact;
+
+
+/* Q237 — Compare all three ranking functions
+Return job_id, job_title_short, salary_year_avg, ROW_NUMBER(), RANK(), and DENSE_RANK(). 
+Rank salaries from highest to lowest within each job category. Exclude NULL salaries.*/
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    ROW_NUMBER() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS row_number_by_title,
+    RANK() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS rank_by_title,
+    DENSE_RANK() OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS dense_rank_by_title
+FROM
+    job_postings_fact
+WHERE 
+    salary_year_avg IS NOT NULL;
+
+
+/* Q238 — Top two distinct salary levels
+Return every posting whose salary belongs to the top two distinct salary
+ levels within its job_title_short category. Preserve ties and exclude NULL salaries.*/
+
+    SELECT
+        job_id,
+        job_title_short,
+        salary_year_avg,
+        DENSE_RANK() OVER(
+            PARTITION BY job_title_short
+            ORDER BY salary_year_avg DESC
+        ) AS dense_rank_by_title
+    FROM
+        job_postings_fact
+    WHERE 
+        salary_year_avg IS NOT NULL
+    QUALIFY dense_rank_by_title <= 2;
+
+
+/* Q239 — Divide postings into four groups
+Use NTILE() to divide salary-bearing postings into four groups within each job_title_short category, 
+ordered from highest salary to lowest. Return the group number and the relevant job details.*/
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    NTILE(4) OVER(
+        PARTITION BY job_title_short
+        ORDER BY salary_year_avg DESC
+    ) AS salary_group
+FROM
+    job_postings_fact
+where 
+    salary_year_avg IS NOT NULL;
