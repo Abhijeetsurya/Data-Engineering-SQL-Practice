@@ -359,3 +359,69 @@ FROM
     job_postings_fact
 where 
     salary_year_avg IS NOT NULL;
+
+
+-- Q240 — Total salary across all postings
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    SUM(salary_year_avg) OVER() AS total_salary
+FROM
+    job_postings_fact
+WHERE 
+    salary_year_avg IS NOT NULL;
+
+--- Q241 — Total salary by job category
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    SUM(salary_year_avg) OVER(
+        PARTITION BY job_title_short
+    ) AS total_salary_by_category   
+FROM
+    job_postings_fact;
+
+---Q242 — Running total by posting date
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    COUNT(job_id) OVER(
+        ORDER BY job_posted_date
+    ) AS running_total_salary 
+FROM   
+    job_postings_fact
+WHERE 
+    salary_year_avg IS NOT NULL;
+
+--- Q243 — Running salary total by category
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    SUM(salary_year_avg) OVER(
+        PARTITION BY job_title_short
+        ORDER BY job_posted_date
+    ) AS running_total_salary_by_category
+FROM
+    job_postings_fact;
+    
+--- Q244 — Category average versus individual salary
+
+SELECT
+    job_id,
+    job_title_short,
+    salary_year_avg,
+    AVG(salary_year_avg) OVER(
+        PARTITION BY job_title_short
+    ) AS avg_salary_by_category , salary_year_avg - AVG(salary_year_avg) OVER(
+        PARTITION BY job_title_short
+    ) AS salary_diff_from_category_avg
+FROM
+    job_postings_fact;
