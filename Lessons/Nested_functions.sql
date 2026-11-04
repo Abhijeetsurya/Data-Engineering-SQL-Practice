@@ -74,3 +74,12 @@ FROM skills_array_struct;
  
 
 -- MAP
+
+WITH skill_map AS(
+    SELECT MAP{'skill':'python', 'type':'Programming'} AS skill_type
+)
+SELECT
+    skill_type['skill'] AS skill,
+    skill_type['type'] AS type
+FROM
+    skill_map;
