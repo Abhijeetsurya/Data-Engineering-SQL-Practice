@@ -83,3 +83,51 @@ SELECT
     skill_type['type'] AS type
 FROM
     skill_map;
+
+-- JSON
+
+SELECT
+    '{"skill": "python", "type": "Programming"}'::JSON AS skill_json;
+
+SELECT
+    TO_JSON('{"skill": "python", "type": "Programming"}') AS skill_json;
+
+
+WITH raw_skill_json AS (
+    SELECT
+        '{"skill": "python", "type": "Programming"}'::JSON AS skill_json
+)
+SELECT
+     skill_json FROM raw_skill_json;
+
+     
+
+WITH raw_skill_json AS (
+    SELECT
+        '{"skill": "python", "type": "Programming"}'::JSON AS skill_json
+)
+SELECT
+    ARRAY_AGG(
+    STRUCT_PACK(
+        skill := json_extract_string(skill_json, '$.skill'),
+        type := json_extract_string(skill_json, '$.type')
+    ) ) AS skills_array FROM raw_skill_json;
+
+-- JSON to Array of STRUCT
+with raw_skill_json AS (
+    SELECT
+        '[
+            {"skill": "python", "type": "Programming"},
+            {"skill": "sql", "type": "query_language"},
+            {"skill": "r", "type": "programming"}
+        ]'::JSON AS skills_json
+)
+SELECT
+    ARRAY_AGG(
+        STRUCT_PACK(
+            skill := json_extract_string(skill_json, '$.skill'),
+            type := json_extract_string(skill_json, '$.type')
+        )
+    ) AS skills_array
+FROM
+    raw_skill_json;
