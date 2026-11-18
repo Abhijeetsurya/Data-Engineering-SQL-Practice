@@ -1,2 +1,4 @@
 *.duckdb
 *.wal
+
+largefile.duckdb
