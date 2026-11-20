@@ -46,3 +46,6 @@ CREATE TABLE skills_job_dim(
 );
 
 SHOW TABLES;
+
+
+SELECT * FROM company_dim;
