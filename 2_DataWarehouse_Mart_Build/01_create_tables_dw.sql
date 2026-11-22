@@ -29,7 +29,7 @@ CREATE TABLE job_postings_fact(
     search_location   VARCHAR,
     job_posted_date   TIMESTAMP,
     job_no_degree_mention BOOLEAN,
-    job_health_insurnance BOOLEAN,
+    job_health_insurance BOOLEAN,
     job_country      VARCHAR,
     salary_rate         VARCHAR,
     salary_year_avg    DOUBLE,
@@ -49,3 +49,6 @@ SHOW TABLES;
 
 
 SELECT * FROM company_dim;
+
+
+
